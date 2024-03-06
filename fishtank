@@ -1,0 +1,100 @@
+import pygame
+import random
+pygame.init()  
+pygame.display.set_caption("fistank simulator")  # sets the window title
+screen = pygame.display.set_mode((1280, 740))  # creates game screen
+screen.fill((0,0,0))
+clock = pygame.time.Clock()
+
+sizes1 = []
+positions1 = []
+colors1 = []
+xpos = 0
+ypos = 0
+mousePos = (xpos, ypos) #variable mousePos stores TWO numbers
+press = False
+key = 0
+
+bx = 350
+by = 250
+bVx = 0.5
+bVy = 0.5
+
+background = pygame.image.load('ftbg.png')
+fish = pygame.image.load('fish.png')
+
+frameWidth = 72
+frameHeight = 72
+RowNum = 0 #for right animation, this will need to change for other animations
+frameNum = 0
+ticker = 0
+
+
+for i in range(2000):
+    sizes1.append(random.randrange(1,10)) #push in 1 number
+    positions1.append((random.randrange(00, 1270),random.randrange(700, 800))) #push in a 2-slot TUPLE
+    colors1.append((random.randrange(100,255),random.randrange(100,255),random.randrange(100,255))) #push in a 3-slot TUPLE
+    
+    
+while True:
+    print(mousePos) #this is just for testing so you can see the mouse coordinates on the screen!
+
+    clock.tick(60)
+
+    #event queue (bucket that holds stuff that happens in game and passes to one of the sections below)
+    #event = pygame.event.wait()
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    #update/timer section---------------------------------------    
+    if mousePos[0] > 0 and mousePos[0] < 100 and mousePos[1] >500:
+        key = 1  
+        
+    if event.type == pygame.QUIT: #close game window
+        break
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        press = True
+
+    if event.type == pygame.MOUSEBUTTONUP:
+        press = False
+
+    if event.type == pygame.MOUSEMOTION:
+        mousePos = event.pos
+        
+    bx += bVx
+    by += bVy
+    #ball wall bounce
+    if bx < 0 or bx + 20 > 1280:
+        bVx *= -1
+    if by < 0 or by +20 > 740:
+        bVy *= -1
+        
+    if bx < 0:
+        RowNum = 0
+    if bx + 20 > 1280:
+        RowNum = 1
+        
+    screen.blit(background, (0, 0))     
+        
+    pygame.draw.rect(screen, (255, 255, 255), (0, 500, 100, 300))
+    
+    for i in range(1000):
+        pygame.draw.circle(screen, colors1[i], (positions1[i][0], positions1[i][1]), sizes1[i])
+    
+    if press == True:
+        if key == 0:
+            print("no key")
+        elif key == 1:
+            print("you clicked me")
+            
+    screen.blit(fish, (bx, by), (frameWidth*frameNum, RowNum*frameHeight, frameWidth, frameHeight))
+            
+    pygame.display.flip() #always needed at the end of every game loop!
+
+
+#end game loop##############################################
+
+pygame.quit()
